@@ -1,0 +1,42 @@
+<extend name="base"/>
+
+<block name="body">
+	<div id="installDialog" class="easyui-dialog" title="执行安装.." data-options="closable:false,buttons:[{text:'上一步',handler:function(){history.go(-1);}},{text:'安装中..'}]" style="width:550px;height:350px">
+		<p id="installmessage" class="text-info">正在准备安装 ...<br /></p>
+	</div>
+	<form id="install" action="<{:U('Index/index')}>" method="post">
+		<input type="hidden" name="step" value="4">
+	</form>
+</block>
+
+<block name="footer">
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$.post('<{:U('Index/install')}>', <{$data}>, function(msg){
+			switch(msg){
+				case '1':
+					$('#installmessage').append("<font color='#ff0000'>指定的数据库不存在，系统也无法创建，请先通过其他方式建立好数据库！</font><br />");
+					$('#installmessage').append("<font color='#ff0000'>安装失败！</font>");
+					$('#installDialog').dialog({ buttons:[{text:'上一步',handler:function(){history.go(-1);}},{text:'安装失败'}]});
+					break;
+				case '2':
+					$('#installmessage').append("<font color='#ff0000'>数据库文件不存在</font>");
+					$('#installDialog').dialog({ buttons:[{text:'上一步',handler:function(){history.go(-1);}},{text:'安装失败'}]});
+					break;
+				case '3':
+					$('#installmessage').append("<font color='blue'>安装完成</font>，但需要手动修改配置文件");
+					$('#installDialog').dialog({ buttons:[{text:'上一步',handler:function(){history.go(-1);}},{text:'安装完成',handler:function(){$('#install').submit();}}]});
+					break;
+				case '4':
+					$('#installmessage').append("<font color='blue'>安装完成</font>");
+					$('#installDialog').dialog({ buttons:[{text:'上一步',handler:function(){history.go(-1);}},{text:'安装完成',handler:function(){$('#install').submit();}}]});
+					break;
+				default:
+					$('#installmessage').append("<font color='#ff0000'>错误信息：</font>"+msg);
+					$('#installDialog').dialog({ buttons:[{text:'上一步',handler:function(){history.go(-1);}},{text:'安装失败'}]});
+			}
+			document.getElementById('installmessage').scrollTop = document.getElementById('installmessage').scrollHeight;
+		}, 'html');
+	});
+	</script>
+</block>

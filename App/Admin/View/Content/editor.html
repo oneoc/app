@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="wangdong">
+<title><{:C('SYSTEM_NAME')}></title>
+<script type="text/javascript" src="__STATIC__/js/jquery.min.js"></script>
+<script type="text/javascript" src="__STATIC__/js/ckeditor/ckeditor.js"></script>
+</head>
+<body style="margin:0;padding:0;background:none">
+<textarea id="editor" name="editor"></textarea>
+<div id="tmp-hidden-div"></div>
+<script type="text/javascript">
+var editor = 'editor';
+var allowTags = [
+	'img[!src,id,alt,width,height,align,valign];',
+	'table[width,height,border,cellspacing,cellpadding,align];caption; thead; tbody; tr; th[width,height,align,valign,colspan,rowspan]; td[width,height,align,valign,colspan,rowspan];',
+	'a[name,href,title,target]{color};',
+	'p{color,text-align};p span{!color};',
+	'div{!page-break-after};div span{!display};',
+	'embed[*];',
+	'ul; ol; li; dl; dt; dd; pre; blockquote; br; hr; strong; i; u; em;'
+];
+var disallowTags = [
+	'td{*};th{*};embed[style];* span[!style];*{float,position,z-index,margin,padding,border};'
+];
+
+CKEDITOR.replace(editor, {
+//	baseHref     : './Public/upload/',
+	extraPlugins : 'pasteupload',
+	uiColor      : '#F5F5F5',
+	fullPage     : false,
+	toolbar      : 'App',
+	toolbar_Full : [
+		['Source','-','NewPage','Preview','-','Templates','ShowBlocks'],
+		['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print', 'SpellChecker', 'Scayt'],
+		['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
+		['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'],
+		['BidiLtr', 'BidiRtl'],
+		'/',
+		['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
+		['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','CreateDiv'],
+		['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+		['Link','Unlink','Anchor'],
+		['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak'],
+		'/',
+		['Styles','Format','Font','FontSize'],
+		['TextColor','BGColor']
+	],
+	toolbar_Basic : [['Bold', 'Italic', '-', 'NumberedList', 'BulletedList', '-', 'Link', 'Unlink','-','ShowBlocks']],
+	toolbar_App : [
+		['Source','-','NewPage','Preview','-','Templates','ShowBlocks'],
+		['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print', 'SpellChecker', 'Scayt'],
+		['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
+		['Styles','Format','Font','FontSize'],
+		['TextColor','BGColor'],
+		'/',
+		['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
+		['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','CreateDiv'],
+		['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+		['Link','Unlink','Anchor'],
+		['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak'],
+		'/',
+		['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'],
+		['BidiLtr', 'BidiRtl']
+	],
+
+	image_previewText         : ' ',
+	allowedContent            : allowTags.join(' '),
+	disallowedContent         : disallowTags.join(' '),
+	startupOutlineBlocks      : true,
+	autoUpdateElement         : true,
+	forcePasteAsPlainText     : false,
+	pasteFromWordRemoveFontStyles : true,
+	pasteFromWordRemoveStyle  : true,
+	filebrowserImageUploadUrl : '<{:U("Upload/image")}>',
+	filebrowserFlashUploadUrl : '<{:U("Upload/flash")}>',
+	filebrowserUploadUrl      : '<{:U("Upload/link")}>',
+
+	wordImagePasteApiUrl      : 'http://127.0.0.1:10101',  //建议端口大于10000
+	imagePasteUploadEnabled   : true,
+	imageRemoteUploadUrl      : '<{:U("Upload/remoteImage")}>',
+	imageRemoteUploadBaseHref : './Public/upload/'         //只用来过滤不用上传远程图片地址
+});
+
+CKEDITOR.instances[editor].on('instanceReady', function () {
+	full();
+	<{$callback}>
+});
+
+function setSource(html){
+	return CKEDITOR.instances[editor].setData(html);
+}
+function getSource(){
+	return CKEDITOR.instances[editor].getData();
+}
+function focus(){
+	return CKEDITOR.instances[editor].focus();
+}
+function full(){
+	CKEDITOR.instances[editor].getCommand('maximize').exec();
+}
+</script>
+</body>
+</html>

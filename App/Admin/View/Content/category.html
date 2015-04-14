@@ -1,0 +1,69 @@
+<div>
+	<span class="tree-icon tree-folder icons-folder-folder"></span>
+	<a href="javascript:;" onclick="contentCategoryModule.refresh()">刷新</a> | 
+	<a href="javascript:;" onclick="contentCategoryModule.collapse()">收起</a> | 
+	<a href="javascript:;" onclick="contentCategoryModule.expand()">展开</a>
+</div>
+<div>
+	<ul id="content-public-category-tree" class="easyui-tree" data-options="url:'<{:U('Content/public_category')}>',animate:true,lines:true,onClick:contentCategoryModule.click"></ul>
+</div>
+
+<script type="text/javascript">
+var contentCategoryModule = {
+	tree: '#content-public-category-tree',
+	
+	//点击事件
+	click: function(node){
+		if (!node.children || node.children.length == 0){
+			contentCategoryModule.open(node.type, node.id, node.crumbs);
+		}
+	},
+	
+	//格式化
+	formatter:function(node){
+		var res = node.text;
+		if (!node.children || node.children.length == 0){
+			var typeList = <{:json_encode(dict('type', 'Category'))}>;
+			res = node.text + ' ['+ typeList[node.type] +']';
+		}
+		return res;
+	},
+	
+	//刷新
+	refresh: function(){
+		$(this.tree).tree('reload');
+	},
+	
+	//收起
+	collapse: function(){
+		$(this.tree).tree('collapseAll');
+	},
+	
+	//展开
+	expand: function(){
+		$(this.tree).tree('expandAll');
+	},
+	
+	//打开页面
+	open: function(type, id, crumbs){
+		switch(parseInt(type)){
+			//页面
+			case 0:
+				var url = "<{:U('Content/page')}>";
+				url += url.indexOf('?') != -1 ? '&catid='+id : '?catid='+id;
+				contentBaseModule.openUrl(url, false, crumbs);
+				break;
+
+			//列表
+			case 1:
+				var url = "<{:U('Content/article')}>";
+				url += url.indexOf('?') != -1 ? '&catid='+id : '?catid='+id;
+				contentBaseModule.openUrl(url, false, crumbs);
+				break;
+
+			default:
+				$.app.method.tip('提示信息', '未知的类型', 'error');
+		}
+	}
+};
+</script>

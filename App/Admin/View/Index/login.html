@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="wangdong">
+<title><{:C('SYSTEM_NAME')}></title>
+<include file="Common:head"/>
+<style type="text/css">
+form{width:280px;height:120px;margin:30px auto 0;}
+form div label{float:left;display:block;width:65px;font-size:16px;padding-top:6px;}
+form div{margin:8px auto;}
+form div.input input{height:21px;padding:2px 3px;width:200px}
+form div.input img{cursor:pointer}
+#code{width:68px}
+</style>
+</head>
+<body>
+<div class="easyui-dialog" title="用户登录" style="width:380px;height:240px" data-options="closable:false,iconCls:'icons-lock-lock',buttons:[{text:'登录',iconCls:'icons-user-user_go',handler:login}]">
+	<form id='form' method="post">
+		<div class="input">
+			<label for="username">用户名:</label>  
+			<input class="easyui-validatebox" type="text" name="username" value="wangdong" data-options="required:true,validType:{length:[2,20]},tipPosition:'bottom'"  />
+		</div>
+		<div class="input">
+			<label for="password">密&nbsp;&nbsp;码:</label>  
+			<input class="easyui-validatebox" type="password" name="password" value="wangdong" data-options="required:true,validType:{length:[6,20]},tipPosition:'bottom'" />
+		</div>
+		<div class="input">
+			<label for="code">验证码:</label>  
+			<input class="easyui-validatebox" type="text" name="code" id="code" size="4" data-options="required:true,validType:{length:[4,4]},tipPosition:'bottom'" />
+			<span style="margin-left:10px"><img id="code_img" align="top" onclick="changeCode()" src="<{:U('Index/code?code_len=4&font_size=14&width=100&height=28&code='.time())}>" title="点击切换验证码"></span> 
+		</div>
+	</form> 
+</div>
+
+<script type="text/javascript">
+$(function(){
+	$('input:text:first').focus();
+	$('form').keyup(function(event){
+		if(event.keyCode ==13) login();
+	});
+});
+function changeCode(){
+	var that = document.getElementById('code_img');
+	that.src = that.src + '&' + Math.random();
+}
+function login(){
+	var isValid = $('form').form('validate');
+	if (!isValid) return false;
+	
+	$.messager.progress({text:'登录中，请稍候...'});
+	$.post('<{:U('Index/login?dosubmit=1')}>', $("form").serialize(), function(data){
+		$.messager.progress('close');
+		if(!data.status){
+			$.app.method.tip('提示信息', data.info, 'error');
+			changeCode();
+		}else{
+			window.location.href = data.url;
+		}
+	},'json');
+	return false;
+}
+</script>
+</body>
+</html>

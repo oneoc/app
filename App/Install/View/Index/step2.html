@@ -1,0 +1,114 @@
+<extend name="base"/>
+
+<block name="body">
+	<div class="easyui-dialog" title="填写默认参数" data-options="closable:false,buttons:[{text:'上一步',handler:function(){history.go(-1);}},{text:'下一步',handler:next}]" style="width:550px;height:350px">
+	<form id="install" action="<{:U('Index/index')}>" method="post">
+		<input type="hidden" name="step" value="3">
+	    <div class="panel">
+	        <div class="panel-header">
+	            <div class="panel-title">填写数据库信息</div>
+	        </div>
+	        <div class="panel-body" style="padding:8px;line-height:1.8">
+		        <table>
+					<tr>
+						<td>数据库主机：</td>
+						<td><input name="dbhost" type="text" id="dbhost" value="<{:C('DB_HOST')}>" <if condition="!IS_WRITE">readonly</if> /></td>
+					</tr>
+					<tr>
+						<td>数据库主机端口：</td>
+						<td><input name="dbport" type="text" id="dbport" value="<{:C('DB_PORT')?C('DB_PORT'):3306 }>" <if condition="!IS_WRITE">readonly</if> /></td>
+					</tr>
+					<tr>
+						<td>数据库帐号：</td>
+						<td><input name="dbuser" type="text" id="dbuser" value="<{:C('DB_USER')}>" <if condition="!IS_WRITE">readonly</if> /></td>
+					</tr>
+					<tr>
+						<td>数据库密码：</td>
+						<td><input name="dbpw" type="password" id="dbpw" value="<{:C('DB_PWD')}>" <if condition="!IS_WRITE">readonly</if> /></td>
+					</tr>
+					<tr>
+						<td>数据库名称：</td>
+						<td><input name="dbname" type="text" id="dbname" value="<{:C('DB_NAME')}>" <if condition="!IS_WRITE">readonly</if> /></td>
+					</tr>
+					<tr>
+						<td>数据表前缀：</td>
+						<td><input name="tablepre" type="text" id="tablepre" value="<{:C('DB_PREFIX')}>" <if condition="!IS_WRITE">readonly</if> /></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	    
+	    <div class="panel" style="margin-top:5px">
+	        <div class="panel-header">
+	            <div class="panel-title">填写帐号信息</div>
+	        </div>
+	        <div class="panel-body" style="padding:8px;line-height:1.8">
+	            <table>
+	            <tr>
+	                <td>超级管理员帐号：</td>
+	                <td><input name="username" type="text" id="username" value="wangdong" placeholder="请输入账号" /></td>
+	            </tr>
+	            <tr>
+	                <td>管理员密码：</td>
+	                <td><input name="password" type="password" id="password" value="wangdong" placeholder="请输入密码" /></td>
+	            </tr>
+	            <tr>
+	                <td>确认密码：</td>
+	                <td><input name="pwdconfirm" type="password" id="pwdconfirm" value="wangdong" placeholder="请输入确认密码" /></td>
+	            </tr>
+	            <tr>
+	                <td>管理员E-mail：</td>
+	                <td><input name="email" type="text" id="email" value="admin@admin.com" placeholder="请输入邮箱" /></td>
+	            </tr>
+	        </table>
+	        <p class="text-info">提示：管理员默认密码为“wangdong”</p>
+	        </div>
+	    </div>
+	</form>
+	</div>
+</block>
+
+<block name="footer">
+	<script type="text/javascript">
+	var errmsg = new Array();
+	errmsg[0] = '您已经安装过，系统会自动删除老数据！是否继续？';
+	errmsg[2] = '无法连接数据库服务器，请检查配置！';
+	errmsg[3] = '成功连接数据库，但是指定的数据库不存在并且无法自动创建，请先通过其他方式建立数据库！';
+	errmsg[6] = '数据库版本低于Mysql 4.0，无法安装，请升级数据库版本！';
+	function next(){
+		var isPass = true;
+		var error = [];
+		if( !/^[A-Za-z]\w{2,19}$/.test($("#username").val()) ){
+			error.push('用户名长度应为3至20位，且必须以字母开头，字母、数字和下划线组成');
+			$("#username").focus();
+			isPass = false;
+		}else if( !/^.{6,20}$/.test($("#password").val()) ){
+			error.push('密码合法长度为6至20位');
+			$("#password").focus();
+			isPass = false;
+		}else if( $("#pwdconfirm").val() != $("#password").val() ){
+			error.push('两次密码不一致');
+			$("#pwdconfirm").focus();
+			isPass = false;
+		}else if( !/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/.test($("#email").val()) ){
+			error.push('邮箱格式不正确');
+			$("#email").focus();
+			isPass = false;
+		}
+		isPass ? checkdb() : $.messager.alert('错误提示', error.join(','), 'error');
+	}
+	function checkdb(){
+	    $.get('<{:U('Index/dbTest')}>', {dbhost: $('#dbhost').val(), dbport: $('#dbport').val(), dbuser: $('#dbuser').val(), dbpw: $('#dbpw').val(), dbname: $('#dbname').val(), tablepre: $('#tablepre').val(), sid: Math.random()*5}, function(data){
+	    	if(data == 0){	
+	    		$.messager.confirm('安装提示', errmsg[data], function(result){
+					if(result) $('#install').submit();
+				});
+			}else if(data > 1){
+				$.messager.alert('错误提示', errmsg[data], 'error');
+			}else if(data == 1) {
+				$('#install').submit();
+			}
+		});
+	}
+	</script>
+</block>

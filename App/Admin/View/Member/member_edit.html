@@ -1,0 +1,36 @@
+<form>
+	<table cellspacing="5" width="100%">
+		<tr>
+			<td width="90">用户名：</td>
+			<td><input class="easyui-validatebox"  type="text" value="<{$info.username}>" readonly style="width:220px" /></td>
+		</tr>
+		<tr>
+			<td>性别：</td>
+			<td>
+				<select class="easyui-combobox" data-options="editable:false,panelHeight:'auto'" name="info[gender]" style="height:24px">
+					<option value="2" <eq name="info.gender" value="2">selected</eq>>保密</option>
+					<option value="1" <eq name="info.gender" value="1">selected</eq>>男</option>
+					<option value="0" <eq name="info.gender" value="0">selected</eq>>女</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>昵称：</td>
+			<td><input class="easyui-validatebox" data-options="required:true,validType:['length[2,50]','remote[\'<{:U('Member/public_checkNick?default=' . $info['nick'])}>\',\'nick\']']" type="text" name="info[nick]" value="<{$info.nick}>" style="width:220px" /></td>
+		</tr>
+		<tr>
+			<td>用户分类：</td>
+			<td>
+				<select class="easyui-combobox" data-options="editable:false,panelHeight:'auto'" name="info[typeid]" style="height:24px">
+					<foreach name="typelist" key="typeid" item="typename">
+						<option value="<{$typeid}>" <eq name="info.typeid" value="$typeid">selected</eq>><{$typename}></option>
+					</foreach>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>备注：</td>
+			<td><textarea class="easyui-validatebox" data-options="validType:{length:[0,500]}" name="info[remark]" style="width:220px;height:60px;font-size:12px"><{$info.remark}></textarea></td>
+		</tr>
+	</table>
+</form>

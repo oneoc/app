@@ -1,0 +1,26 @@
+<form>
+	<table cellspacing="6" width="100%">
+		<tr>
+			<td width="90">用户名：</td>
+			<td><input class="easyui-validatebox" type="text" value="<{$info.username}>" readonly style="width:200px" /></td>
+		</tr>
+		<tr>
+			<td>真实姓名：</td>
+			<td><input class="easyui-validatebox" type="text" name="info[realname]" value="<{$info.realname}>" data-options="required:true,validType:{length:[2,20]}" style="width:200px" /></td>
+		</tr>
+		<tr>
+			<td>E-mail：</td>
+			<td><input class="easyui-validatebox" type="text" name="info[email]" value="<{$info.email}>" data-options="required:true,validType:['email','length[3,40]','remote[\'<{:U('Admin/public_checkEmail', array('default'=>$info['email']))}>\',\'email\']']" style="width:200px" /></td>
+		</tr>
+		<tr>
+			<td>所属角色：</td>
+			<td>
+				<select class="easyui-combobox" data-options="editable:false,panelHeight:'auto'" name="info[roleid]" style="height:24px">
+				<foreach name="rolelist" key="roleid" item="rolename">
+					<option value="<{$roleid}>" <eq name="info.roleid" value="$roleid">selected</eq>><{$rolename}></option>
+				</foreach>
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>

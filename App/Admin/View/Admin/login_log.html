@@ -1,0 +1,50 @@
+<taglib name="Admin\TagLib\EasyUI" />
+
+<easyui:datagrid options="datagrid.options" fields="datagrid.fields" />
+
+<div id="admin-loginlog-datagrid-toolbar" style="padding:5px;height:auto">
+	<form>
+		时 间: <input name="search[begin]" class="easyui-datebox" style="width:100px">
+		至: <input name="search[end]" class="easyui-datebox" style="width:100px">
+		
+		<a href="javascript:;" onclick="adminLoginLogModule.search(this);" class="easyui-linkbutton" iconCls="icons-table-table">搜索</a>
+		<a href="javascript:;" onclick="adminLoginLogModule.delete();" class="easyui-linkbutton" iconCls="icons-table-table_delete">删除一月前数据</a>
+	</form>
+</div>
+
+<script type="text/javascript">
+var adminLoginLogModule = {
+	dialog:   '#globel-dialog-div',
+	datagrid: '#admin_loginlog_datagrid',
+	
+	//刷新
+	refresh: function(){
+		$(this.datagrid).datagrid('reload');
+	},
+	
+	//搜索
+	search: function(that){
+		var queryParams = $(this.datagrid).datagrid('options').queryParams;
+		$.each($(that).parent('form').serializeArray(), function() {
+			queryParams[this['name']] = this['value'];
+		});
+		$(this.datagrid).datagrid({pageNumber: 1});
+	},
+	
+	//删除记录
+	delete: function(){
+		var that = this;
+		$.messager.progress({text:'处理中，请稍候...'});
+		$.post('<{:U('Admin/loginLogDelete')}>', {week: 4}, function(res){
+			$.messager.progress('close');
+			
+			if(!res.status){
+				$.app.method.tip('提示信息', res.info, 'error');
+			}else{
+				$.app.method.tip('提示信息', res.info, 'info');
+				that.refresh();
+			}
+		}, 'json');
+	}
+}
+</script>

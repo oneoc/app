@@ -1,5 +1,12 @@
-# app
-thinkphp + easyui开发的后台管理系统
+# 演示地址
+http://wangdong.sinaapp.com
 
-# 说明
-v1.1.0即将发布
+# 捐赠作者（支付宝捐赠）
+![支付宝捐赠](Public/static/img/alipay.jpg)
+
+# 交流群
+Q群1：212044599 Q群2：219126334
+
+# 开发手册
+- http://doc.thinkphp.cn/（ThinkPHP开发手册）
+- http://jeasyui.com/documentation/（EasyUI开发手册）

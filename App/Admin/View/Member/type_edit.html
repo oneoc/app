@@ -1,0 +1,23 @@
+<form>
+	<table cellspacing="6" width="100%">
+		<tr>
+			<td width="90">分类名称：</td>
+			<td><input class="easyui-validatebox" data-options="required:true,validType:['length[2,50]','remote[\'<{:U('Member/public_checkTypeName', array('default'=>$info['typename']))}>\',\'typename\']']" type="text" name="info[typename]" value="<{$info.typename}>" style="width:220px" /></td>
+		</tr>
+		<tr>
+			<td>分类描述：</td>
+			<td><textarea class="easyui-validatebox" data-options="validType:{length:[0,200]}" name="info[description]" style="width:220px;height:60px;font-size:12px"><{$info.description}></textarea></td>
+		</tr>
+		<tr>
+			<td>排序：</td>
+			<td><input class="easyui-numberbox" type="text" name="info[listorder]" value="<{$info.listorder}>" data-options="min:0,precision:0" style="width:40px" /></td>
+		</tr>
+		<tr>
+			<td>是否启用：</td>
+			<td>
+				<label><input type="radio" name="info[disabled]" value="0" <eq name="info.disabled" value="0">checked</eq> />启用</label>
+				<label><input type="radio" name="info[disabled]" value="1" <eq name="info.disabled" value="1">checked</eq> />禁止</label>
+			</td>
+		</tr>
+	</table>
+</form>

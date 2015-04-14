@@ -1,0 +1,18 @@
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/icons.css" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/js/easyui/themes/default/easyui.css" title="default" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/js/easyui/themes/gray/easyui.css" title="gray" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/js/easyui/themes/bootstrap/easyui.css" title="bootstrap" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/js/easyui/themes/metro/easyui.css" title="metro" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/admin/default.css" title="default" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/admin/gray.css" title="gray" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/admin/bootstrap.css" title="bootstrap" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/admin/metro.css" title="metro" />
+<script type="text/javascript">
+var theme = $.cookie('theme') || 'default'; //全局变量
+$(document).ready(function(){
+	$('link[rel*=style][title]').each(function(i){
+		this.disabled = true;
+		if (this.getAttribute('title') == theme) this.disabled = false;
+	});
+});
+</script>

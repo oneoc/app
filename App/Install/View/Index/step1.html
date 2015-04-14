@@ -1,0 +1,56 @@
+<extend name="base"/>
+
+<block name="body">
+	<div id="checkdialog" class="easyui-dialog" title="检测安装环境" data-options="closable:false,buttons:[{text:'检测中...'}]" style="width:550px;height:350px;">
+		<p id="checkmessage" style="line-height:1.5;margin:0;padding:5px">正在检测，请稍后 ...<br /></p>
+	</div>
+	<form id="install" action="<{:U('Index/index')}>" method="post">
+		<input type="hidden" name="step" value="2">
+	</form>
+</block>
+
+<block name="footer">
+	<script type="text/javascript">
+	var items = {
+		'uname':'操作系统',
+		'server':'WEB 服务器',
+		'phpversion':'PHP 版本',
+		'mysql':'MYSQL 扩展',
+		'gd':'GD 扩展',
+		'imagick': 'Imagick扩展',
+		'json':'JSON 扩展',
+		'curl':'CURL 扩展'
+		<if condition="IS_WRITE">,
+		'config':'配置文件写入权限',
+		'upload':'上传目录写入权限',
+		'tmp':'临时目录写入权限'
+		</if>
+	}
+	$(function(){
+		var pass = true;
+		for(var item in items){
+			$.ajax({
+				type: 'POST',
+				url:'<{:U('Index/check')}>',
+				data: {item: item},
+				dataType: 'json',
+				async: false,
+				beforeSend: function(){
+					$('#checkmessage').append('检测'+items[item]+' ...... ');
+				},
+				success: function(res){
+					res.status ?  $('#checkmessage').append('<font color="">'+res.info+'</font><br/>') : $('#checkmessage').append('<font color="red">'+res.info+'</font><br/>');
+					if(!res.status) pass = false;
+				}
+			});
+		}
+		if(!pass){
+			$('#checkmessage').append('<font color="red">对不起，您当前环境不满足安装要求</font><br/>');
+			$('#checkdialog').dialog({buttons:[{text:'重新检测',handler:function(){location.href=location.href;}}]});
+		}else{
+			$('#checkmessage').append('检测通过<br/>');
+			$('#checkdialog').dialog({buttons:[{text:'重新检测',handler:function(){location.href=location.href;}},{text:'下一步',handler:function(){$('#install').submit();}}]});
+		}
+	})
+	</script>
+</block>

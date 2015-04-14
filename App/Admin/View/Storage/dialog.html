@@ -1,0 +1,184 @@
+<div class="easyui-tabs" data-options="fit:true,border:false,plain:true">
+	<div title="本地上传" data-options="cache:true">
+		<table width="100%" height="100%" align="center" valign="middle">
+			<tr>
+				<td align="center" style="font-size: 14px;color:grey;cursor: default" onclick="StoragePublicDialogModule.upload()"><img src="__STATIC__/img/upload.png" alt="点击上传图片"/></td>
+			</tr>
+		</table>
+	</div>
+
+	<div title="在线管理" data-options="cache:true">
+		<table id="storage-public-dialog-datagrid" class="easyui-datagrid" data-options="fit:true,border:false,fitColumns:true,rownumbers:false,singleSelect:true,striped:true,url:'<{:U('Storage/public_dialog', array('grid'=>'datagrid'))}>',onDblClickRow:StoragePublicDialogModule.click,toolbar:'#storage-public-dialog-datagrid-toolbar',onLoadSuccess:StoragePublicDialogModule.tooltip">
+			<thead>
+			<tr>
+				<th data-options="field:'operate',width:30,align:'center',formatter:StoragePublicDialogModule.operate">操作</th>
+				<th data-options="field:'name',width:200,formatter:StoragePublicDialogModule.name">名称</th>
+				<th data-options="field:'size',width:50">文件大小</th>
+			</tr>
+			</thead>
+		</table>
+		<div id="storage-public-dialog-datagrid-toolbar" style="padding:1px;height:auto">
+			<form style="padding:0 5px">
+				路径：<input type="text" name="path" value="/" style="width:200px;padding:2px" readonly />
+				<a href="javascript:;" onclick="StoragePublicDialogModule.refresh()" class="easyui-linkbutton" iconCls="icons-folder-folder_explore" plain="true">浏览</a>
+				<a href="javascript:;" onclick="StoragePublicDialogModule.back(this)" class="easyui-linkbutton" iconCls="icons-folder-folder_go" plain="true">上级</a>
+			</form>
+		</div>
+	</div>
+
+	<div title="网络资源" data-options="cache:true">
+		<form style="text-align: center">
+			<input class="easyui-validatebox" data-options="required:true,validType:['url','length[10,255]']" type="text" style="width: 80%;margin:20px auto;"/>
+			<a href="javascript:;" onclick="StoragePublicDialogModule.input(this)" class="easyui-linkbutton">使用</a>
+		</form>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var StoragePublicDialogModule = {
+	dialog :  '#globel-dialog-div',
+	datagrid: '#storage-public-dialog-datagrid',
+
+	//name格式化
+	name: function(val, arr){
+		var icon = 'icons-folder-folder';
+		if(arr.type != 'dir'){
+			icon = 'icons-page-page_white';
+			var ext = /[^\.]+$/.exec(val);
+			icon += ' icons-ext-' + ext[0].toLowerCase();
+		}
+		return '<span class="tree-icon tree-file ' + icon + '" url="./Public/upload/' + arr.url + '"></span>' +  val;
+	},
+
+	//操作
+	operate: function (val, arr) {
+		switch(arr.type){
+			case 'file':
+				return '<a href="javascript:;" onclick="StoragePublicDialogModule.callback(\'' + arr.url + '\')">使用</a>';
+				break;
+			case 'dir':
+				var path = '/' + arr.path;
+				return '<a href="javascript:;" onclick="StoragePublicDialogModule.open(\'' + path + '\')">打开</a>';
+				break;
+		}
+		return '-';
+	},
+
+	//刷新
+	refresh: function(){
+		$(this.datagrid).datagrid('reload');
+	},
+
+	//文件提示
+	tooltip: function(){
+		var that = StoragePublicDialogModule;
+		$(that.datagrid).datagrid('getPanel').find('div.datagrid-body td[field="name"] div.datagrid-cell').each(function(){
+			var url = $(this).find('span:first').attr('url');
+			var ext = /[^\.]+$/.exec(url);
+			ext = ext[0].toLowerCase();
+			var content = null;
+
+			switch(ext){
+				case 'jpg':
+				case 'jpeg':
+				case 'png':
+				case 'bmp':
+				case 'gif':
+					content = '<img src="'+ url +'" height="160" />';
+					break;
+			}
+			if(content) $(this).tooltip({trackMouse: true,content: content});
+		});
+	},
+
+	//双击事件
+	click: function(rowIndex, rowData){
+		var that = StoragePublicDialogModule;
+
+		switch(rowData.type){
+			case 'file':
+				that.callback(rowData.url);
+				break;
+			case 'dir':
+				var path = '/' + rowData.path;
+				that.open(path);
+				break;
+		}
+	},
+
+	//打开目录
+	open: function(path){
+		path = path.replace(/[\\\/]+/g, '/') || '/';
+
+		var queryParams = $(this.datagrid).datagrid('options').queryParams;
+		queryParams['path'] = path;
+		$(this.datagrid).datagrid('reload');
+
+		$('#storage-public-dialog-datagrid-toolbar').find('input[name="path"]').val(path);
+	},
+
+	//返回上级目录
+	back: function(that){
+		var path = $('#storage-public-dialog-datagrid-toolbar').find('input[name="path"]').val();
+		path = path.replace(/[\\\/][^\\\/]+[\\\/]?$/, '');
+		this.open(path);
+	},
+
+	//上传文件
+	upload: function(){
+		var that = this;
+		$.app.method.upload(
+				"<{:U('Upload/file')}>",
+				function(res){
+					if(res.status){
+						var url = res.info;
+						that.callback(url);
+						that.refresh();
+					}else{
+						$.app.method.tip('提示信息', (res.info || '上传失败'), 'error');
+					}
+				},
+				function(filename){  //上传验证函数
+					return that.verify(filename);
+				}
+		);
+	},
+
+	//自定义url
+	input: function(that){
+		var _this = this;
+		$(that).parent('form:first').form('submit', {
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid) return false;
+
+				var url = $(that).prev('input[type="text"]').val();
+				_this.callback(url);
+
+				return false;
+			}
+		});
+	},
+
+	//验证格式
+	verify: function(filename){
+		<notempty name="ext">
+			if(!filename.match(/\.<{:implode('$|\\.', $ext)}>$/i)){
+				$.app.method.tip('提示信息', '不支持的文件格式', 'error');
+				return false;
+			}
+		</notempty>
+		return true;
+	},
+
+	//回调方法
+	callback: function(url){
+		if(!this.verify(url)) return false;
+
+		<if condition="$callback">
+			<{$callback}>(url);
+		</if>
+	}
+};
+</script>

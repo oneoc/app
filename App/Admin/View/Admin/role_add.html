@@ -1,0 +1,20 @@
+<form>
+	<table cellspacing="6" width="100%">
+		<tr>
+			<td width="90">角色名称：</td>
+			<td><input class="easyui-validatebox" type="text" name="info[rolename]" data-options="required:true,validType:['length[2,20]','remote[\'<{:U('Admin/public_checkRoleName')}>\',\'rolename\']']" style="width:220px" /></td>
+		</tr>
+		<tr>
+			<td>角色描述：</td>
+			<td><textarea class="easyui-validatebox" name="info[description]" data-options="validType:{length:[0,200]}" style="width:220px;height:60px;font-size:12px"></textarea></td>
+		</tr>
+		<tr>
+			<td>排序：</td>
+			<td><input class="easyui-numberbox" type="text" name="info[listorder]" data-options="min:0,precision:0" style="width:40px" /></td>
+		</tr>
+		<tr>
+			<td>是否启用：</td>
+			<td><label><input type="radio" name="info[disabled]" value="0" checked />启用</label> <label><input type="radio" name="info[disabled]" value="1" />禁止</label></td>
+		</tr>
+	</table>
+</form>
