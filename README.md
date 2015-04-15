@@ -5,8 +5,13 @@ http://wangdong.sinaapp.com
 ![支付宝捐赠](Public/static/img/alipay.jpg)
 
 # 交流群
-Q群1：212044599 Q群2：219126334
+| 序号 | QQ群      | 状态 |
+|------|-----------|------|
+| 1群  | 212044599 | 已满 |
+| 2群  | 219126334 | 可加 |
 
 # 开发手册
-- http://doc.thinkphp.cn/ （ThinkPHP开发手册）
-- http://jeasyui.com/documentation/ （EasyUI开发手册）
+| 名称     | 链接                              |
+| -------- |-----------------------------------|
+| ThinkPHP | http://doc.thinkphp.cn/           |
+| EasyUI   | http://jeasyui.com/documentation/ |
